@@ -34,11 +34,11 @@ function newGame () {
         if (side == "O"){
             $("#"+event.target.id).text("O");
             $("#"+event.target.id).prop("disabled", true);
-            console.log(winMove("O"));
             AI(event.target.id);
         } else {
             $("#"+event.target.id).text("X");
             $("#"+event.target.id).prop("disabled", true);
+            AI(event.target.id);
         }
     });
     
@@ -49,22 +49,28 @@ function AI (clicked) {
     $("button:enabled").each(function(){
         legalMoves.push( $(this).attr("id"));
     });
-    //console.log(legalMoves);
-    if (clicked == 4){
-        //$("#0").text("X");
-        //$("#0").prop("disabled", true);
+    for (var i = 0; i < legalMoves.length; i++){
+        // Checks if a winning legal move is available
+        $("#"+legalMoves[i]).text("X");
+        console.log(winMove("X"));
+        if (winMove("X")){
+            break;
+        } else {
+            $("#"+legalMoves[i]).text("");
+        }
+        
     }
 }
 
 function winMove ( letter ) {
-    return ( $("#0").text() == letter && $("#1").text() == letter &&  $("#2").text() == letter) ||
+    return (( $("#0").text() == letter && $("#1").text() == letter &&  $("#2").text() == letter) ||
         ( $("#3").text() == letter && $("#4").text() == letter &&  $("#5").text() == letter) ||
         ( $("#6").text() == letter && $("#7").text() == letter &&  $("#8").text() == letter) ||
         ( $("#0").text() == letter && $("#3").text() == letter &&  $("#6").text() == letter) ||
         ( $("#1").text() == letter && $("#4").text() == letter &&  $("#7").text() == letter) ||
         ( $("#2").text() == letter && $("#5").text() == letter &&  $("#8").text() == letter) ||
         ( $("#0").text() == letter && $("#4").text() == letter &&  $("#8").text() == letter) ||
-        ( $("#2").text() == letter && $("#4").text() == letter &&  $("#6").text() == letter);
+        ( $("#2").text() == letter && $("#4").text() == letter &&  $("#6").text() == letter));
 }
     
 newGame();
