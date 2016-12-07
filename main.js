@@ -34,19 +34,19 @@ function newGame () {
         if (side == "O"){
             $("#"+event.target.id).text("O");
             $("#"+event.target.id).prop("disabled", true);
-            var move = AI(event.target.id);
+            var move = AI("X");
             makeMove(move);
         } else {
             $("#"+event.target.id).text("X");
             $("#"+event.target.id).prop("disabled", true);
-            var move = AI(event.target.id);
+            var move = AI("O");
             makeMove(move);
         }
     });
     
 }
 
-function AI (clicked) {
+function AI (AI_side) {
     var legalMoves = [];
     $("button:enabled").each(function(){
         legalMoves.push( $(this).attr("id"));
@@ -57,6 +57,7 @@ function AI (clicked) {
         console.log(winMove("X"));
         if (winMove("X")){
             $("#"+legalMoves[i]).text("");
+            console.log("returned on win");
             return legalMoves[i];
         } else {
             $("#"+legalMoves[i]).text("");
@@ -66,8 +67,7 @@ function AI (clicked) {
         // checks if the opponent can win on the next move
         $("#"+legalMoves[i]).text("O");
             if (winMove("O")) {
-                //$("#"+legalMoves[i]).text("X");
-                //$("#"+legalMoves[i]).prop("disabled", true);
+                console.log("returned on opponent win");
                 return legalMoves[i];
             } else {
                 $("#"+legalMoves[i]).text("");
@@ -75,6 +75,8 @@ function AI (clicked) {
     }
     
     for (var i = 0; i <legalMoves.length; i++){
+        // Takes corner if available
+        console.log("");
         if (legalMoves[i] == 0){
             return 0;
         } else if(legalMoves[i] == 2){
@@ -83,11 +85,17 @@ function AI (clicked) {
             return 6;
         } else if (legalMoves[i] == 8) {
             return 8;
-        } else if(legalMoves[i] ==4) {
-            return 4;
-        } else{
-            return legalMoves[i];
         }
+    }
+    for (var i = 0; i < legalMoves.length; i++) {
+        // takes center if available
+        if(legalMoves[i] ==4) {
+            return 4;
+        }
+    }
+    for (var i = 0; i < legalMoves.length; i++) {
+        // makes any legal move.
+        return legalMoves[i];
     }
     
     
