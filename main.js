@@ -16,6 +16,14 @@ var getSide, setSide;
 
 $(document).ready(function(){
     
+    $("#reset-btn").hide();
+    
+    $("#reset-btn").click(function(){
+        $("button").text("");
+        $("button").prop("disabled", false);
+        $("#reset-btn").hide();
+    });
+    
     $("#O").click(function(){
         $("#X").prop("checked", false);
         setSide("O");
@@ -27,6 +35,8 @@ $(document).ready(function(){
         setSide("X");
         $("button").text("");
         $("button").prop("disabled", false);
+        $("#0").text("O");
+        $("#0").prop("disabled", true);
     });
 });
 
@@ -39,19 +49,35 @@ function newGame () {
             $("#"+event.target.id).text("O");
             $("#"+event.target.id).prop("disabled", true);
             move = AI("X");
-            makeMove(move);
+            if (move == "draw"){
+                $("#reset-btn").text("Reset");
+                $("#reset-btn").show()
+            } else {
+                makeMove(move);
+            }
+            
             if ( winMove("X")) {
                 console.log("computer win");
+                $("#reset-btn").show();
                 $("button").text("");
                 $("button").prop("disabled", false);
+                $("#reset-btn").text("Reset");
+                $("#reset-btn").show()
             }
         } else if (inSide == "X") {
             $("#"+event.target.id).text("X");
             $("#"+event.target.id).prop("disabled", true);
             move = AI("O");
-            makeMove(move);
+            if (move == "draw"){
+                $("#reset-btn").text("Reset");
+                $("#reset-btn").show()
+            } else {
+                makeMove(move);
+            }
             if ( winMove("O")) {
                 console.log("computer win");
+                $("#reset-btn").text("Reset");
+                $("#reset-btn").show()
             }
         }
     });
@@ -72,6 +98,23 @@ function AI (AI_side) {
     $("button:enabled").each(function(){
         legalMoves.push( $(this).attr("id"));
     });
+    
+    console.log(legalMoves.length);
+    
+    if (legalMoves.length == 9 && AI_side == "X"){
+        if (legalMoves[3]  == 4){
+            return 4;
+        }
+    }
+    
+    if (legalMoves.length == 1){
+        return "draw";
+    }
+    if (legalMoves.length == 2){
+        $("#"+legalMoves[0]).text("O");
+        return "draw";
+    }
+    
     for (var i = 0; i < legalMoves.length; i++){
         // Checks if a winning legal move is available
         $("#"+legalMoves[i]).text(AI_side);
@@ -119,10 +162,8 @@ function AI (AI_side) {
         // makes any legal move.
         return legalMoves[i];
     }
-    if (legalMoves.length === 0){
-        console.log("Draw");
-    }
     
+    return "draw";
 }
 
 function winMove ( letter ) {
