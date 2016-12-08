@@ -19,28 +19,40 @@ $(document).ready(function(){
     $("#O").click(function(){
         $("#X").prop("checked", false);
         setSide("O");
-        newGame();
+        $("button").text("");
+        $("button").prop("disabled", false);
     });
     $("#X").click(function(){
         $("#O").prop("checked", false);
         setSide("X");
-        newGame();
+        $("button").text("");
+        $("button").prop("disabled", false);
     });
 });
 
 function newGame () {
-    var side = getSide();
+    var move;
     $("button").click(function(){
-        if (side == "O"){
+        var inSide = getSide();
+        
+        if (inSide == "O"){
             $("#"+event.target.id).text("O");
             $("#"+event.target.id).prop("disabled", true);
-            var move = AI("X");
+            move = AI("X");
             makeMove(move);
-        } else {
+            if ( winMove("X")) {
+                console.log("computer win");
+                $("button").text("");
+                $("button").prop("disabled", false);
+            }
+        } else if (inSide == "X") {
             $("#"+event.target.id).text("X");
             $("#"+event.target.id).prop("disabled", true);
-            var move = AI("O");
+            move = AI("O");
             makeMove(move);
+            if ( winMove("O")) {
+                console.log("computer win");
+            }
         }
     });
     
@@ -48,16 +60,24 @@ function newGame () {
 
 function AI (AI_side) {
     var legalMoves = [];
+    
+    this.AI_side = AI_side;
+    var opponent;
+    if (AI_side == "X"){
+        opponent = "O";
+    } else{
+        opponent = "X";
+    }
+    //console.log(opponent);
     $("button:enabled").each(function(){
         legalMoves.push( $(this).attr("id"));
     });
     for (var i = 0; i < legalMoves.length; i++){
         // Checks if a winning legal move is available
-        $("#"+legalMoves[i]).text("X");
-        console.log(winMove("X"));
-        if (winMove("X")){
+        $("#"+legalMoves[i]).text(AI_side);
+        if (winMove(AI_side)){
+            //console.log("returns in AI Win")
             $("#"+legalMoves[i]).text("");
-            console.log("returned on win");
             return legalMoves[i];
         } else {
             $("#"+legalMoves[i]).text("");
@@ -65,9 +85,11 @@ function AI (AI_side) {
     }
     for (var i = 0; i < legalMoves.length; i++) {
         // checks if the opponent can win on the next move
-        $("#"+legalMoves[i]).text("O");
-            if (winMove("O")) {
-                console.log("returned on opponent win");
+        
+        $("#"+legalMoves[i]).text(opponent);
+            if (winMove(opponent)) {
+                //console.log("returns in opponent")
+                $("#"+legalMoves[i]).text("");
                 return legalMoves[i];
             } else {
                 $("#"+legalMoves[i]).text("");
@@ -97,7 +119,9 @@ function AI (AI_side) {
         // makes any legal move.
         return legalMoves[i];
     }
-    
+    if (legalMoves.length === 0){
+        console.log("Draw");
+    }
     
 }
 
@@ -113,8 +137,17 @@ function winMove ( letter ) {
 }
 
 function makeMove(move){
-    $("#"+move).text("X");
-    $("#"+move).prop("disabled", true);
+    this.move = move;
+    var side = getSide();
+    //console.log("makeMove:" +side);
+    if (side == "O"){
+        $("#"+move).text("X");
+        $("#"+move).prop("disabled", true);
+    }
+    else if (side == "X") {
+        $("#"+move).text("O");
+        $("#"+move).prop("disabled", true);
+    }
+   
 }
-    
 newGame();
